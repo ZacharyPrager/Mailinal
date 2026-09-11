@@ -34,5 +34,5 @@ class Database:
             , (email.id, email.sender, email.subject, email.date))
             self.connection.commit()
         print("Emails added")
-
+    
     

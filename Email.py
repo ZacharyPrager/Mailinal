@@ -11,4 +11,7 @@ class Email:
     body: Optional[str] = None # To save storage, the body will be a get function rather than the actual text
 
     def to_dict(self) -> dict:
-        return self.__dict__
+        d = self.__dict__.copy()
+        if callable(d.get('body')):
+            d['body'] = None
+        return d

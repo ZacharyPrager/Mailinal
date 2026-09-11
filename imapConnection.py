@@ -6,8 +6,6 @@ import Email
 import email
 from email.policy import default
 
-#TODO def read_email() => based on fetch_email_data() get the contents of the email
-
 class IMAPClient:
 
     SECURE_PORT = 993 
@@ -77,8 +75,10 @@ class IMAPClient:
                             id = id.decode("utf-8"),
                             subject = parsed_email.get("Subject", ""),
                             sender = parsed_email.get("From", ""),
-                            date = parsed_email.get("Date", "")
+                            date = parsed_email.get("Date", ""),
                         )  
+                    # The email body will store a function that returns the body rather than saving the text
+                    email_obj.body = lambda e=email_obj: self.get_email_body(e)
                     emails.append(email_obj)
                 return emails
             except Exception as e:
@@ -111,7 +111,27 @@ class IMAPClient:
             print(f"An error occured: {e}")
             return False
 
-    def read_email(self):
-        # Go into the database and fetch the email, query by sender, date, id, etc
-        # store this function in the Email body attribute: Email.body = read_email( arguments )
-        print("todo")
+    def get_email_body(self, email_obj: Email.Email):
+        try:
+            status, email_body = self.connection.fetch(email_obj.id, "(RFC822)")
+            if status != "OK":
+                print("Error: Body couldn't be retrieved")
+                return None
+
+            raw = email_body[0][1]
+            parsed = email.message_from_bytes(raw, policy=default)
+
+            plain = None
+            html = None
+
+            for part in parsed.walk():
+                content_type = part.get_content_type()
+                if content_type == "text/plain" and plain is None:
+                    plain = part.get_content()
+                elif content_type == "text/html" and html is None:
+                    html = part.get_content()
+
+            return {"plain": plain, "html": html}
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
