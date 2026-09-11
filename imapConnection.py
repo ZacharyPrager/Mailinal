@@ -45,7 +45,7 @@ class IMAPClient:
         else:
             print("Error: 'config.json' is not found")
 
-    def fetch_emails(self) -> list:
+    def fetch_inbox(self) -> list:
         emails = []
         if self.connection:
             try:
