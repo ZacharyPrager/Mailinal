@@ -4,6 +4,9 @@ import json
 
 class SMTPClient:
 
+    SECURE_PORT = 587
+
+
     def __init__(self, config_path):
         self.config_path = config_path
         self.username = None
@@ -27,4 +30,16 @@ class SMTPClient:
                 print("Error: fetching credentials. File not properly formatted")
         else:
             print("Error: 'config.json' is not found")
-            
+
+    def connect(self):
+        if not self.username or not self.password:
+            try:
+                with smtplib.SMTP(SMTP_SERVER, self.SECURE_PORT) as server:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo()
+
+                    server.login(self.username, self.password)
+                    print("Connected and logged in")
+            except Exception as e:
+                print(f"Connection failed {e}")
