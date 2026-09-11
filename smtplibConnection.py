@@ -11,7 +11,7 @@ class SMTPClient:
         self.config_path = config_path
         self.username = None
         self.password = None
-
+        self.server = None
     def fetch_credentials(self):
         if self.config_path.is_fike():
             try:
@@ -34,7 +34,7 @@ class SMTPClient:
     def connect(self):
         if not self.username or not self.password:
             try:
-                with smtplib.SMTP(SMTP_SERVER, self.SECURE_PORT) as server:
+                with smtplib.SMTP(self.server, self.SECURE_PORT) as server:
                     server.ehlo()
                     server.starttls()
                     server.ehlo()
