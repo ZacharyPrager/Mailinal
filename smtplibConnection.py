@@ -43,3 +43,4 @@ class SMTPClient:
                     print("Connected and logged in")
             except Exception as e:
                 print(f"Connection failed {e}")
+    
